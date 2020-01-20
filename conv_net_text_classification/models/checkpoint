@@ -1,2 +1,2 @@
-model_checkpoint_path: "cnn_chars_61x50"
-all_model_checkpoint_paths: "cnn_chars_61x50"
+model_checkpoint_path: "cnn_words_300x25"
+all_model_checkpoint_paths: "cnn_words_300x25"
