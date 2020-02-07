@@ -7,7 +7,7 @@
 
 |   ![cnn](cnn_and_dense_model.png)	|
 |:-:	|
-|   **Combindation of CNN and simple dense model for sentiment classification**	|
+|   **Combination of CNN and dense model for sentiment classification**	|
 
 
 Movie dataset from: http://www.cs.cornell.edu/people/pabo/movie-review-data/
