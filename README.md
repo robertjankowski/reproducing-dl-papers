@@ -1,2 +1,4 @@
 # reproducing-dl-papers
-Reproducing deep learning papers. Focusing on NLP tasks.
+
+
+## CNNs for sentiment classification: `conv_net_text_classification`
