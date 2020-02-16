@@ -1,3 +1,4 @@
 .ipynb_checkpoints
 base_model*
 GoogleNews-vectors-negative300.bin/
+data/
