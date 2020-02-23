@@ -2,7 +2,7 @@
 
 
 Based on:
-> Harvard Medical School, Boston, MA, United States, et al. “Detecting Hate Speech in Social Media.” RANLP 2017 - Recent Advances in Natural Language Processing Meet Deep Learning, Incoma Ltd. Shoumen, Bulgaria, 2017, pp. 467–72. DOI.org (Crossref), doi:10.26615/978-954-452-049-6_062.
+> [Harvard Medical School, Boston, MA, United States, et al. “Detecting Hate Speech in Social Media.” RANLP 2017 - Recent Advances in Natural Language Processing Meet Deep Learning, Incoma Ltd. Shoumen, Bulgaria, 2017, pp. 467–72. DOI.org (Crossref), doi:10.26615/978-954-452-049-6_062](https://arxiv.org/abs/1712.06427).
 
 Data from: https://github.com/t-davidson/hate-speech-and-offensive-language
 
