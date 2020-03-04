@@ -1,6 +1,7 @@
-# reproducing-dl-papers
+# Reproducing interesting (not only) deep learning papers
 
 
-- ## CNNs for sentiment classification: `conv_net_text_classification`
+- ## Dense & CNN for sentiment classification
 
-- ## Neural network for hate detection in social media: `detecting_hate_speech_social_media`
+
+- ## Neural network for hate detection in social media
