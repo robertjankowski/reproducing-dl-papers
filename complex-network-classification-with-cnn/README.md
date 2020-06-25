@@ -3,3 +3,8 @@ My implementation of very interesting paper: [Complex Networks Classification wi
 
 Custom pipeline to convert graphs into images
 ![pipeline](pipeline.png) 
+
+
+|   **Intput BA network** | **After pipeline** |
+|:-:	|:-:	|
+| ![](ba_network.png)| ![](ba_network_after.png) |
