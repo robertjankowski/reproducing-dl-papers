@@ -11,3 +11,14 @@
 |   **Intput BA network** | **After pipeline** |
 |:-:	|:-:	|
 | ![](ba_network.png)| ![](ba_network_after.png) |
+
+
+**Task complex network classification: BA vs WS**
+
+```
+accuracy: 0.8211 - AUC: 0.9094
+```
+
+**Model architecture**
+
+<img src="model.png" width=300>
