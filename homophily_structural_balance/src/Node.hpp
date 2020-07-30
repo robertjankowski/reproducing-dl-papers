@@ -17,9 +17,13 @@ class Node {
 public:
     Node();
 
-    [[nodiscard]] std::array<State, G> getAttributes() const { return _attributes; }
+    [[nodiscard]] auto getAttributes() const { return _attributes; }
 
     void changeAttribute(unsigned int pos, State state);
+
+    bool operator<(const Node<G> &node) const {
+        return this->getTotalState() > node.getTotalState();
+    }
 
 private:
     State getRandomState() {
@@ -31,6 +35,14 @@ private:
             return State::Positive;
         else
             return State::Negative;
+    }
+
+    [[nodiscard]] double getTotalState() const {
+        double total{0.0};
+        for (const auto &state: _attributes) {
+            total += static_cast<int>(state);
+        }
+        return total;
     }
 };
 
