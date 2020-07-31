@@ -2,7 +2,6 @@
 #define HOMOPHILY_STRUCTURAL_BALANCE_GRAPH_HPP
 
 #include <vector>
-#include <map>
 #include "Node.hpp"
 
 template<unsigned int SIZE>
@@ -78,11 +77,9 @@ State Graph<SIZE, G>::getRandomStateTriad() const {
 
 template<unsigned int SIZE, unsigned int G>
 Graph<SIZE, G>::Graph() {
-    for (unsigned int i = 0; i < SIZE; ++i) {
-        for (unsigned int j = 0; j < SIZE; ++j) {
+    for (unsigned int i = 0; i < SIZE; ++i)
+        for (unsigned int j = 0; j < SIZE; ++j)
             _matrix[i][j] = false;
-        }
-    }
 }
 
 

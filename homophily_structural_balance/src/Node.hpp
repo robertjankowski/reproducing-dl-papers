@@ -13,7 +13,7 @@ enum class State {
 template<unsigned int G>
 class Node {
     std::array<State, G> _attributes;
-    unsigned int _id{0};
+    unsigned    int _id{0};
 public:
     explicit Node(int id);
 
