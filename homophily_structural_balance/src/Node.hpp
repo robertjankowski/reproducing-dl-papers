@@ -4,6 +4,7 @@
 #include <array>
 #include <random>
 #include <algorithm>
+#include "utils.h"
 
 enum class State {
     Positive = 1,
@@ -13,7 +14,7 @@ enum class State {
 template<unsigned int G>
 class Node {
     std::array<State, G> _attributes;
-    unsigned    int _id{0};
+    unsigned int _id{0};
 public:
     explicit Node(int id);
 
@@ -25,34 +26,24 @@ public:
 
     void changeAttribute(unsigned int pos, const State &state);
 
-    bool operator<(const Node<G> &node) const {
-        return this->getId() > node.getId();
-    }
-
-    bool operator==(const Node &node) const {
-        return this->getId() == node.getId();
-    }
+    void flipToPositive(unsigned int count);
 
 private:
     [[nodiscard]] State getRandomState(double probability = 0.5) {
-        static std::random_device rd;
-        static std::mt19937 mt(rd());
-        std::bernoulli_distribution dist(probability);
-        if (dist(mt))
+        if (utils::getRandom(probability))
             return State::Positive;
         else
             return State::Negative;
     }
-
 };
 
 template<unsigned int G>
 std::ostream &operator<<(std::ostream &os, const Node<G> &node) {
-    os << node.getId();
-    //    const auto nodeAttributes = node.getAttributes();
-    //    std::for_each(nodeAttributes.begin(), nodeAttributes.end(), [&os](const auto &state) {
-    //        os << static_cast<int>(state) << ", ";
-    //    });
+    os << node.getId() << ": ";
+    const auto nodeAttributes = node.getAttributes();
+    std::for_each(nodeAttributes.begin(), nodeAttributes.end(), [&os](const auto &state) {
+        os << static_cast<int>(state) << ", ";
+    });
     return os;
 }
 
@@ -69,6 +60,20 @@ void Node<G>::changeAttribute(unsigned int pos, const State &state) {
         _attributes.at(pos) = state;
 }
 
+template<unsigned int G>
+void Node<G>::flipToPositive(unsigned int count) {
+    std::vector<int> iterator(_attributes.size());
+    std::iota(iterator.begin(), iterator.end(), 0);
+    utils::randomShuffle(iterator);
+    for (const auto &pos: iterator) {
+        if (count < 1)
+            break;
+        if (_attributes.at(pos) == State::Negative) {
+            _attributes.at(pos) == State::Positive;
+            --count;
+        }
+    }
+}
 
 template<unsigned int G>
 double hammingDistance(const Node<G> &n1, const Node<G> &n2) {

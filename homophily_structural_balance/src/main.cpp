@@ -1,4 +1,5 @@
 #include <iostream>
+#include <chrono>
 #include "Node.hpp"
 #include "Graph.hpp"
 
@@ -12,11 +13,15 @@ int main() {
     std::cout << n << std::endl;
 
 
-    auto g = Graph<10, 5>::completeGraph();
-    std::cout << "Graph: " << std::endl;
-    std::cout << g << std::endl;
+    auto g = Graph<200, 10>::completeGraph();
 
-    g.getRandomStateTriad();
+    auto start = std::chrono::steady_clock::now();
+    for (int ii = 0; ii < 10000; ++ii) {
+        const auto[i, j, k] = g.getRandomStateTriad();
+    }
+    auto end = std::chrono::steady_clock::now();
+    std::cout << "Elapsed time: "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() << "ms\n";
 
 
     return 0;
