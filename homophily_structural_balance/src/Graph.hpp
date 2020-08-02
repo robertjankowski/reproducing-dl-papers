@@ -4,7 +4,7 @@
 #include <vector>
 #include <tuple>
 #include "Node.hpp"
-#include "utils.h"
+#include "Utils.h"
 
 template<unsigned int SIZE>
 using AdjenencyMatrix = std::array<std::array<bool, SIZE>, SIZE>;
@@ -29,6 +29,8 @@ public:
 
     [[nodiscard]] auto getAdjenencyMatrix() const { return _matrix; }
 
+    [[nodiscard]] auto getNodes() const { return _nodes; }
+
 };
 
 template<unsigned int SIZE, unsigned int G>
@@ -42,7 +44,6 @@ void Graph<SIZE, G>::addEdge(const Node<G> &source, const Node<G> &target) {
     } else
         std::cerr << "Matrix size is smaller than source or target ID\n";
 }
-
 
 template<unsigned int SIZE, unsigned int G>
 void Graph<SIZE, G>::addEdgeUndirected(const Node<G> &source, const Node<G> &target) {
@@ -105,14 +106,12 @@ Graph<SIZE, G>::Graph() {
 
 template<unsigned int SIZE, unsigned int G>
 void Graph<SIZE, G>::updateNode(const Node<G> &newNode) {
-    // check if node with that id exists and update if
     const auto it = std::find(_nodes.begin(), _nodes.end(), newNode);
     if (it != _nodes.end()) {
         const auto index = std::distance(_nodes.begin(), it);
         _nodes.at(index) = newNode;
     }
 }
-
 
 template<unsigned int SIZE, unsigned int G>
 std::ostream &operator<<(std::ostream &os, const Graph<SIZE, G> &graph) {
@@ -124,6 +123,5 @@ std::ostream &operator<<(std::ostream &os, const Graph<SIZE, G> &graph) {
     }
     return os;
 }
-
 
 #endif //HOMOPHILY_STRUCTURAL_BALANCE_GRAPH_HPP

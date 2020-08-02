@@ -4,7 +4,7 @@
 #include <array>
 #include <random>
 #include <algorithm>
-#include "utils.h"
+#include "Utils.h"
 
 enum class State {
     Positive = 1,
@@ -28,6 +28,19 @@ public:
 
     void flipToPositive(unsigned int count);
 
+    void flipToNegative(unsigned int count);
+
+    bool operator==(const Node<G> &node) {
+        bool equalAttributes = true;
+        for (unsigned int i = 0; i < _attributes.size(); ++i) {
+            const auto a1 = static_cast<int>(_attributes.at(i));
+            const auto a2 = static_cast<int>(node.getAttributes().at(i));
+            if (a1 != a2)
+                equalAttributes = false;
+        }
+        return _id == node.getId() && equalAttributes;
+    }
+
 private:
     [[nodiscard]] State getRandomState(double probability = 0.5) {
         if (utils::getRandom(probability))
@@ -35,6 +48,8 @@ private:
         else
             return State::Negative;
     }
+
+    void flipAttribute(unsigned int count, const State &from, const State &to);
 };
 
 template<unsigned int G>
@@ -62,14 +77,24 @@ void Node<G>::changeAttribute(unsigned int pos, const State &state) {
 
 template<unsigned int G>
 void Node<G>::flipToPositive(unsigned int count) {
+    flipAttribute(count, State::Negative, State::Positive);
+}
+
+template<unsigned int G>
+void Node<G>::flipToNegative(unsigned int count) {
+    flipAttribute(count, State::Positive, State::Negative);
+}
+
+template<unsigned int G>
+void Node<G>::flipAttribute(unsigned int count, const State &from, const State &to) {
     std::vector<int> iterator(_attributes.size());
     std::iota(iterator.begin(), iterator.end(), 0);
     utils::randomShuffle(iterator);
     for (const auto &pos: iterator) {
         if (count < 1)
             break;
-        if (_attributes.at(pos) == State::Negative) {
-            _attributes.at(pos) == State::Positive;
+        if (_attributes.at(pos) == from) {
+            _attributes.at(pos) = to;
             --count;
         }
     }
