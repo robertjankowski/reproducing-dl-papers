@@ -26,19 +26,12 @@ public:
 
     void changeAttribute(unsigned int pos, const State &state);
 
-    void flipToPositive(unsigned int count);
+    static Node<G> flipPositiveEdge(const Node<G> &nodeA, const Node<G> &nodeB, unsigned int count = 1);
 
-    void flipToNegative(unsigned int count);
+    static Node<G> flipNegativeEdge(const Node<G> &nodeA, const Node<G> &nodeB, unsigned int count = 1);
 
     bool operator==(const Node<G> &node) {
-        bool equalAttributes = true;
-        for (unsigned int i = 0; i < _attributes.size(); ++i) {
-            const auto a1 = static_cast<int>(_attributes.at(i));
-            const auto a2 = static_cast<int>(node.getAttributes().at(i));
-            if (a1 != a2)
-                equalAttributes = false;
-        }
-        return _id == node.getId() && equalAttributes;
+        return _id == node.getId();
     }
 
 private:
@@ -49,7 +42,15 @@ private:
             return State::Negative;
     }
 
-    void flipAttribute(unsigned int count, const State &from, const State &to);
+    [[nodiscard]] static Node<G> getRandomNode(const Node<G> &nodeA, const Node<G> &nodeB, double probabilityA = 0.5) {
+        if (utils::getRandom(probabilityA))
+            return nodeA;
+        else
+            return nodeB;
+    }
+
+    static Node<G> flipEdge(const Node<G> &nodeA, const Node<G> &nodeB,
+                            const std::string &negOrPos, unsigned int count = 1);
 };
 
 template<unsigned int G>
@@ -76,28 +77,50 @@ void Node<G>::changeAttribute(unsigned int pos, const State &state) {
 }
 
 template<unsigned int G>
-void Node<G>::flipToPositive(unsigned int count) {
-    flipAttribute(count, State::Negative, State::Positive);
+Node<G> Node<G>::flipPositiveEdge(const Node<G> &nodeA, const Node<G> &nodeB, unsigned int count) {
+    return flipEdge(nodeA, nodeB, "positive", count);
 }
 
 template<unsigned int G>
-void Node<G>::flipToNegative(unsigned int count) {
-    flipAttribute(count, State::Positive, State::Negative);
+Node<G> Node<G>::flipNegativeEdge(const Node<G> &nodeA, const Node<G> &nodeB, unsigned int count) {
+    return flipEdge(nodeA, nodeB, "negative", count);
 }
 
 template<unsigned int G>
-void Node<G>::flipAttribute(unsigned int count, const State &from, const State &to) {
-    std::vector<int> iterator(_attributes.size());
-    std::iota(iterator.begin(), iterator.end(), 0);
-    utils::randomShuffle(iterator);
-    for (const auto &pos: iterator) {
-        if (count < 1)
-            break;
-        if (_attributes.at(pos) == from) {
-            _attributes.at(pos) = to;
-            --count;
+Node<G> Node<G>::flipEdge(const Node<G> &nodeA, const Node<G> &nodeB,
+                          const std::string &negOrPos, unsigned int count) {
+//    std::cout << "NodeA: " << nodeA << "\tNodeB: " << nodeB << std::endl;
+    Node<G> result = getRandomNode(nodeA, nodeB);
+    const auto attrA = nodeA.getAttributes();
+    const auto attrB = nodeB.getAttributes();
+    std::vector<int> states;
+
+    for (unsigned int i = 0; i < attrA.size(); ++i) {
+        if ((negOrPos == "negative" && attrA.at(i) != attrB.at(i)) ||
+            (negOrPos == "positive" && attrA.at(i) == attrB.at(i))) {
+            states.push_back(i);
         }
     }
+
+    utils::randomShuffle(states);
+//    std::cout << "Chosen states: ";
+//    for (auto a: states)
+//        std::cout << a << '\t';
+//    std::cout << '\n';
+    states.resize(count); // only change `count` attributes
+
+    for (const auto &pos: states) {
+        switch (result.getAttributes().at(pos)) {
+            case State::Positive:
+                result.changeAttribute(pos, State::Negative);
+                break;
+            case State::Negative:
+                result.changeAttribute(pos, State::Positive);
+            default:
+                break;
+        }
+    }
+    return result;
 }
 
 template<unsigned int G>

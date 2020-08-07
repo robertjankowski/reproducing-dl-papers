@@ -1,7 +1,5 @@
 #include <iostream>
 #include <chrono>
-#include "Node.hpp"
-#include "Graph.hpp"
 #include "Simulation.h"
 
 int main() {
@@ -13,11 +11,11 @@ int main() {
     //      a) phase diagram `rho` vs `p` (Fig. 2, Fig. 4a)
     //      b) phase diagram `P_p` vs `p` (Fig. 5a,b)
 
-    Simulation<11, 10001> s;
+    Simulation<101, 1001> s;
 
     auto start = std::chrono::steady_clock::now();
 
-    s.run(0.8, 1000);
+    s.run(0.68, 1000);
 
     auto end = std::chrono::steady_clock::now();
     std::cout << "Elapsed time: "

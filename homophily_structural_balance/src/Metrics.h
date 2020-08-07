@@ -9,8 +9,7 @@ namespace metrics {
     double positiveLinksDensity(const Graph<SIZE, G> &g) {
         const auto nodes = g.getNodes();
         const auto matrix = g.getAdjenencyMatrix();
-        int positiveLinks{0};
-        int totalLinks{0};
+        int positiveLinks{0}, totalLinks{0};
         for (unsigned int i = 0; i < SIZE; ++i) {
             for (unsigned int j = 0; j < i; ++j) { // or check if not `j < SIZE`
                 if (matrix[i][j]) {

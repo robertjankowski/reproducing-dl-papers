@@ -18,6 +18,11 @@ public:
 private:
     void singleStep(double p);
 
+    void updateTriadDeltaThree(const Node<G> &i, const Node<G> &j, const Node<G> &k, Node<G> &toUpdate);
+
+    void updateTriadDeltaOne(const Node<G> &i, const Node<G> &j, const Node<G> &k,
+                             int p_ij, int p_jk, int p_ik, Node<G> &toUpdate, double p);
+
 };
 
 template<unsigned int SIZE, unsigned int G>
@@ -62,46 +67,58 @@ void Simulation<SIZE, G>::singleStep(double p) {
         Node<G> toUpdate;
         if (triadType == -3) {
             // \Delta_3
-            switch (utils::getRandom(0, 2)) {
-                case 0:
-                    toUpdate = i;
-                    break;
-                case 1:
-                    toUpdate = j;
-                    break;
-                case 2:
-                    toUpdate = k;
-                    break;
-                default:
-                    break;
-            }
-            toUpdate.flipToPositive(1);
+            updateTriadDeltaThree(i, j, k, toUpdate);
         } else if (triadType == 1) {
-            //  \Delta_1
-            if (p < utils::getRandom()) {
-                // negative link is chosen
-                if (p_ij * p_jk == -1) {
-                    toUpdate = j;
-                } else if (p_jk * p_ik == -1) {
-                    toUpdate = k;
-                } else if (p_ij * p_ik == -1) {
-                    toUpdate = i;
-                }
-                toUpdate.flipToPositive(1);
-            } else {
-                // positive link is chosen
-                if (p_ij * p_jk == 1) {
-                    toUpdate = j;
-                } else if (p_jk * p_ik == 1) {
-                    toUpdate = k;
-                } else if (p_ij * p_ik == 1) {
-                    toUpdate = i;
-                }
-                toUpdate.flipToNegative(1);
-            }
+            // \Delta_1
+            updateTriadDeltaOne(i, j, k, p_ij, p_jk, p_ik, toUpdate, p);
         }
+
+//        std::cout << "Updating: " << toUpdate << std::endl;
         _graph.updateNode(toUpdate);
     }
 }
+
+template<unsigned int SIZE, unsigned int G>
+void Simulation<SIZE, G>::updateTriadDeltaThree(const Node<G> &i, const Node<G> &j, const Node<G> &k,
+                                                Node<G> &toUpdate) {
+    switch (utils::getRandom(0, 2)) {
+        case 0:
+            toUpdate = Node<G>::flipNegativeEdge(i, j);
+            break;
+        case 1:
+            toUpdate = Node<G>::flipNegativeEdge(j, k);
+            break;
+        case 2:
+            toUpdate = Node<G>::flipNegativeEdge(i, k);
+            break;
+        default:
+            break;
+    }
+}
+
+template<unsigned int SIZE, unsigned int G>
+void Simulation<SIZE, G>::updateTriadDeltaOne(const Node<G> &i, const Node<G> &j, const Node<G> &k,
+                                              int p_ij, int p_jk, int p_ik, Node<G> &toUpdate, double p) {
+    if (p < utils::getRandom()) {
+        // Choose negative edge
+        if (p_ij == -1) {
+            toUpdate = Node<G>::flipNegativeEdge(i, j);
+        } else if (p_jk == -1) {
+            toUpdate = Node<G>::flipNegativeEdge(j, k);
+        } else if (p_ik == -1) {
+            toUpdate = Node<G>::flipNegativeEdge(i, k);
+        }
+    } else {
+        // Choose positive edge
+        if (p_ij == 1) {
+            toUpdate = Node<G>::flipPositiveEdge(i, j);
+        } else if (p_jk == 1) {
+            toUpdate = Node<G>::flipPositiveEdge(j, k);
+        } else if (p_ik == 1) {
+            toUpdate = Node<G>::flipPositiveEdge(i, k);
+        }
+    }
+}
+
 
 #endif //HOMOPHILY_STRUCTURAL_BALANCE_SIMULATION_H
