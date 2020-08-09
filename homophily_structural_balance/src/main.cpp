@@ -3,19 +3,17 @@
 #include "Simulation.h"
 
 int main() {
-    // TODO:
-    //  1. fix density of positive links results:
-    //      - it could be the issue with simulation code or metrics calculations
-    //  2. Calculate probability of reaching the paradise state (rho = 1) P_p ???
-    //  3. Perform simulation to plot
-    //      a) phase diagram `rho` vs `p` (Fig. 2, Fig. 4a)
-    //      b) phase diagram `P_p` vs `p` (Fig. 5a,b)
+    //  TODO:
+    //   2. Calculate probability of reaching the paradise state (rho = 1) P_p ???
+    //   3. Perform simulation to plot
+    //       a) phase diagram `rho` vs `p` (Fig. 2, Fig. 4a)
+    //       b) phase diagram `P_p` vs `p` (Fig. 5a,b)
 
-    Simulation<101, 1001> s;
+    Simulation<11, 10001> s;
 
     auto start = std::chrono::steady_clock::now();
 
-    s.run(0.68, 1000);
+    s.run(0.50, 100000);
 
     auto end = std::chrono::steady_clock::now();
     std::cout << "Elapsed time: "

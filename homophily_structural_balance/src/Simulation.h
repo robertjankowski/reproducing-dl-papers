@@ -1,17 +1,16 @@
 #ifndef HOMOPHILY_STRUCTURAL_BALANCE_SIMULATION_H
 #define HOMOPHILY_STRUCTURAL_BALANCE_SIMULATION_H
 
-#include "Graph.hpp"
+#include "CompleteGraph.hpp"
 #include "Node.hpp"
 #include "Metrics.h"
 
 template<unsigned int SIZE, unsigned int G>
 class Simulation {
 
-    Graph<SIZE, G> _graph;
+    CompleteGraph<SIZE, G> _graph{};
 
 public:
-    Simulation();
 
     void run(double p, unsigned int iterations);
 
@@ -28,15 +27,12 @@ private:
 template<unsigned int SIZE, unsigned int G>
 void Simulation<SIZE, G>::run(double p, unsigned int iterations) {
     for (unsigned int i = 0; i < iterations; ++i) {
-        std::cout << "Positive links density at step " << i << " = " << metrics::positiveLinksDensity(_graph)
-                  << std::endl;
+        if (i % 5000 == 0) {
+            std::cout << "Positive links density at step " << i << " = " << metrics::positiveLinksDensity(_graph)
+                      << std::endl;
+        }
         singleStep(p);
     }
-}
-
-template<unsigned int SIZE, unsigned int G>
-Simulation<SIZE, G>::Simulation() {
-    _graph = Graph<SIZE, G>::completeGraph();
 }
 
 template<unsigned int SIZE, unsigned int G>
@@ -58,12 +54,9 @@ void Simulation<SIZE, G>::singleStep(double p) {
     const auto p_jk = static_cast<int>(polarities(j, k));
     const auto p_ik = static_cast<int>(polarities(i, k));
 
-//    std::cout << "i: " << i << " j: " << j << " k: " << k << std::endl;
-//    std::cout << "p_ij: " << p_ij << " p_jk: " << p_jk << " p_ik: " << p_ik << std::endl;
     const auto outputPolarity = p_ij * p_jk * p_ik;
     if (outputPolarity == -1) {
         const auto triadType = p_ij + p_jk + p_ik;
-//        std::cout << "Triad type: " << triadType << "\n";
         Node<G> toUpdate;
         if (triadType == -3) {
             // \Delta_3
@@ -72,8 +65,6 @@ void Simulation<SIZE, G>::singleStep(double p) {
             // \Delta_1
             updateTriadDeltaOne(i, j, k, p_ij, p_jk, p_ik, toUpdate, p);
         }
-
-//        std::cout << "Updating: " << toUpdate << std::endl;
         _graph.updateNode(toUpdate);
     }
 }
@@ -99,7 +90,7 @@ void Simulation<SIZE, G>::updateTriadDeltaThree(const Node<G> &i, const Node<G> 
 template<unsigned int SIZE, unsigned int G>
 void Simulation<SIZE, G>::updateTriadDeltaOne(const Node<G> &i, const Node<G> &j, const Node<G> &k,
                                               int p_ij, int p_jk, int p_ik, Node<G> &toUpdate, double p) {
-    if (p < utils::getRandom()) {
+    if (p > utils::getRandom()) {
         // Choose negative edge
         if (p_ij == -1) {
             toUpdate = Node<G>::flipNegativeEdge(i, j);

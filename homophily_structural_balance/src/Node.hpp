@@ -2,6 +2,7 @@
 #define HOMOPHILY_STRUCTURAL_BALANCE_NODE_HPP
 
 #include <array>
+#include <vector>
 #include <random>
 #include <algorithm>
 #include "Utils.h"
@@ -13,7 +14,7 @@ enum class State {
 
 template<unsigned int G>
 class Node {
-    std::array<State, G> _attributes;
+    std::vector<State> _attributes;
     unsigned int _id{0};
 public:
     explicit Node(int id);
@@ -30,9 +31,7 @@ public:
 
     static Node<G> flipNegativeEdge(const Node<G> &nodeA, const Node<G> &nodeB, unsigned int count = 1);
 
-    bool operator==(const Node<G> &node) {
-        return _id == node.getId();
-    }
+    bool operator==(const Node<G> &node) { return _id == node.getId(); }
 
 private:
     [[nodiscard]] State getRandomState(double probability = 0.5) {
@@ -42,7 +41,8 @@ private:
             return State::Negative;
     }
 
-    [[nodiscard]] static Node<G> getRandomNode(const Node<G> &nodeA, const Node<G> &nodeB, double probabilityA = 0.5) {
+    [[nodiscard]] static Node<G> getRandomNode(const Node<G> &nodeA, const Node<G> &nodeB,
+                                               double probabilityA = 0.5) {
         if (utils::getRandom(probabilityA))
             return nodeA;
         else
@@ -65,6 +65,7 @@ std::ostream &operator<<(std::ostream &os, const Node<G> &node) {
 
 template<unsigned int G>
 Node<G>::Node(int id): _id(id) {
+    _attributes.resize(G);
     std::generate(_attributes.begin(), _attributes.end(), [&]() { return getRandomState(); });
 }
 
@@ -89,7 +90,6 @@ Node<G> Node<G>::flipNegativeEdge(const Node<G> &nodeA, const Node<G> &nodeB, un
 template<unsigned int G>
 Node<G> Node<G>::flipEdge(const Node<G> &nodeA, const Node<G> &nodeB,
                           const std::string &negOrPos, unsigned int count) {
-//    std::cout << "NodeA: " << nodeA << "\tNodeB: " << nodeB << std::endl;
     Node<G> result = getRandomNode(nodeA, nodeB);
     const auto attrA = nodeA.getAttributes();
     const auto attrB = nodeB.getAttributes();
@@ -103,10 +103,6 @@ Node<G> Node<G>::flipEdge(const Node<G> &nodeA, const Node<G> &nodeB,
     }
 
     utils::randomShuffle(states);
-//    std::cout << "Chosen states: ";
-//    for (auto a: states)
-//        std::cout << a << '\t';
-//    std::cout << '\n';
     states.resize(count); // only change `count` attributes
 
     for (const auto &pos: states) {
@@ -126,9 +122,11 @@ Node<G> Node<G>::flipEdge(const Node<G> &nodeA, const Node<G> &nodeB,
 template<unsigned int G>
 double hammingDistance(const Node<G> &n1, const Node<G> &n2) {
     double distance{0};
+    const auto attr1 = n1.getAttributes();
+    const auto attr2 = n2.getAttributes();
     for (unsigned int i = 0; i < G; ++i) {
-        const auto ai = static_cast<int>(n1.getAttributes().at(i));
-        const auto aj = static_cast<int>(n2.getAttributes().at(i));
+        const auto ai = static_cast<int>(attr1.at(i));
+        const auto aj = static_cast<int>(attr2.at(i));
         distance += ai * aj;
     }
     return distance / (2 * G);
