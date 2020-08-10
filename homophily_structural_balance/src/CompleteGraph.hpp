@@ -41,6 +41,7 @@ std::tuple<Node<G>, Node<G>, Node<G>> CompleteGraph<SIZE, G>::getRandomStateTria
 
 template<unsigned int SIZE, unsigned int G>
 CompleteGraph<SIZE, G>::CompleteGraph() {
+    
     for (unsigned int i = 0; i < SIZE; ++i)
         _nodes.at(i) = Node<G>(i);
 }
