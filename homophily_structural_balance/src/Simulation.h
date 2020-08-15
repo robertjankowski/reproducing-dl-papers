@@ -1,6 +1,8 @@
 #ifndef HOMOPHILY_STRUCTURAL_BALANCE_SIMULATION_H
 #define HOMOPHILY_STRUCTURAL_BALANCE_SIMULATION_H
 
+#include <fstream>
+#include <sstream>
 #include "CompleteGraph.hpp"
 #include "Node.hpp"
 #include "Metrics.h"
@@ -12,7 +14,9 @@ class Simulation {
 
 public:
 
-    void run(double p, unsigned int iterations);
+    std::string prepareFilename(const std::string &prefix, double p, unsigned int iterations);
+
+    void run(double p, unsigned int iterations, const std::string &filename);
 
 private:
     void singleStep(double p);
@@ -22,12 +26,14 @@ private:
     void updateTriadDeltaOne(const Node<G> &i, const Node<G> &j, const Node<G> &k,
                              int p_ij, int p_jk, int p_ik, Node<G> &toUpdate, double p);
 
+    void saveMetrics(const std::string &filename);
 };
 
 template<unsigned int SIZE, unsigned int G>
-void Simulation<SIZE, G>::run(double p, unsigned int iterations) {
+void Simulation<SIZE, G>::run(double p, unsigned int iterations, const std::string &filename) {
     for (unsigned int i = 0; i < iterations; ++i) {
         if (i % 5000 == 0) {
+            saveMetrics(filename);
             std::cout << "Positive links density at step " << i << " = " << metrics::positiveLinksDensity(_graph)
                       << std::endl;
         }
@@ -109,6 +115,25 @@ void Simulation<SIZE, G>::updateTriadDeltaOne(const Node<G> &i, const Node<G> &j
             toUpdate = Node<G>::flipPositiveEdge(i, k);
         }
     }
+}
+
+template<unsigned int SIZE, unsigned int G>
+void Simulation<SIZE, G>::saveMetrics(const std::string &filename) {
+    std::ofstream file;
+    file.open(filename, std::ios_base::app);
+    file << metrics::positiveLinksDensity(_graph) << '\n';
+    file.close();
+}
+
+template<unsigned int SIZE, unsigned int G>
+std::string Simulation<SIZE, G>::prepareFilename(const std::string &prefix, double p, unsigned int iterations) {
+    std::time_t t = std::time(0);   // get time now
+    auto now = std::localtime(&t);
+    std::stringstream ss;
+    ss << prefix << "_p=" << p << "_iterations=" << iterations << "_SIZE=" << SIZE << "_G=" << G << "_";
+    ss << now->tm_hour << ":" << now->tm_min << ":" << now->tm_sec << "_";
+    ss << now->tm_mday << "-" << now->tm_mon << "-" << now->tm_year << ".dat";
+    return ss.str();
 }
 
 
