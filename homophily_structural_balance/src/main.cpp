@@ -9,11 +9,11 @@ int main() {
     //       a) phase diagram `rho` vs `p` (Fig. 2, Fig. 4a)
     //       b) phase diagram `P_p` vs `p` (Fig. 5a,b)
 
-    Simulation<11, 1001> s;
+    Simulation<11, 10001> s;
 
     auto start = std::chrono::steady_clock::now();
 
-    s.run(0.15, 5000);
+    s.run(0.4, 50000);
 
     // without openmp
     // <11, 1001> 5000 iterations - 39 130 ms

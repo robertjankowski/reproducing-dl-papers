@@ -57,7 +57,7 @@ void Simulation<SIZE, G>::singleStep(double p) {
     const auto outputPolarity = p_ij * p_jk * p_ik;
     if (outputPolarity == -1) {
         const auto triadType = p_ij + p_jk + p_ik;
-        Node<G> toUpdate;
+        Node<G> toUpdate = i; // do not create new object each time
         if (triadType == -3) {
             // \Delta_3
             updateTriadDeltaThree(i, j, k, toUpdate);

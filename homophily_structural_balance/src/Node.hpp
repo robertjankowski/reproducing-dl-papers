@@ -124,7 +124,7 @@ double hammingDistance(const Node<G> &n1, const Node<G> &n2) {
     double distance{0};
     const auto attr1 = n1.getAttributes();
     const auto attr2 = n2.getAttributes();
-#pragma omp parallel for default(none) reduction(+:distance) 
+#pragma omp parallel for default(none) shared(attr1, attr2) reduction(+:distance)
     for (unsigned int i = 0; i < G; ++i) {
         const auto ai = static_cast<int>(attr1.at(i));
         const auto aj = static_cast<int>(attr2.at(i));

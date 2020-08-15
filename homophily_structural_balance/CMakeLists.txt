@@ -9,7 +9,7 @@ set(source_dir "${PROJECT_SOURCE_DIR}/src/")
 
 file(GLOB source_files "${source_dir}/*")
 
-add_executable(homophily_structural_balance "${source_files}" src/Simulation.h src/Utils.h src/Metrics.h)
+add_executable(homophily_structural_balance "${source_files}")
 
 target_compile_options(homophily_structural_balance PRIVATE -Wall ${OpenMP_CXX_FLAGS})
 target_link_libraries(homophily_structural_balance PRIVATE ${OpenMP_CXX_FLAGS})
