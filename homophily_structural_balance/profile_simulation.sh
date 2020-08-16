@@ -17,5 +17,4 @@ diagram_name=$2
 log_file=$(mktemp /tmp/log_file.out.XXX)
 
 valgrind --callgrind-out-file=$log_file --tool=callgrind $executable_file
-cat $log_file
 gprof2dot -f callgrind $log_file | dot -Tsvg -o $diagram_name

@@ -1,5 +1,5 @@
-#ifndef HOMOPHILY_STRUCTURAL_BALANCE_UTILS_H
-#define HOMOPHILY_STRUCTURAL_BALANCE_UTILS_H
+#ifndef HOMOPHILY_STRUCTURAL_BALANCE_UTILS_HPP
+#define HOMOPHILY_STRUCTURAL_BALANCE_UTILS_HPP
 
 #include <random>
 #include <algorithm>
@@ -35,6 +35,13 @@ namespace utils {
         std::shuffle(vec.begin(), vec.end(), rng);
     }
 
+    template<typename T>
+    void saveToFile(const std::string &filename, const T &content) {
+        std::ofstream file(filename, std::ios_base::app);
+        file << content << '\n';
+        file.close();
+    }
+
 }
 
-#endif //HOMOPHILY_STRUCTURAL_BALANCE_UTILS_H
+#endif //HOMOPHILY_STRUCTURAL_BALANCE_UTILS_HPP

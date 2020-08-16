@@ -4,7 +4,7 @@
 #include <vector>
 #include <tuple>
 #include "Node.hpp"
-#include "Utils.h"
+#include "Utils.hpp"
 
 template<unsigned int SIZE>
 using AdjenencyMatrix = std::array<std::array<bool, SIZE>, SIZE>;

@@ -1,11 +1,11 @@
-#ifndef HOMOPHILY_STRUCTURAL_BALANCE_SIMULATION_H
-#define HOMOPHILY_STRUCTURAL_BALANCE_SIMULATION_H
+#ifndef HOMOPHILY_STRUCTURAL_BALANCE_SIMULATION_HPP
+#define HOMOPHILY_STRUCTURAL_BALANCE_SIMULATION_HPP
 
 #include <fstream>
 #include <sstream>
 #include "CompleteGraph.hpp"
 #include "Node.hpp"
-#include "Metrics.h"
+#include "Metrics.hpp"
 
 template<unsigned int SIZE, unsigned int G>
 class Simulation {
@@ -18,9 +18,13 @@ public:
 
     void run(double p, unsigned int iterations, const std::string &filename);
 
-private:
+    void resetGraph();
+
+    auto getGraph() const { return _graph; }
+
     void singleStep(double p);
 
+private:
     void updateTriadDeltaThree(const Node<G> &i, const Node<G> &j, const Node<G> &k, Node<G> &toUpdate);
 
     void updateTriadDeltaOne(const Node<G> &i, const Node<G> &j, const Node<G> &k,
@@ -119,15 +123,15 @@ void Simulation<SIZE, G>::updateTriadDeltaOne(const Node<G> &i, const Node<G> &j
 
 template<unsigned int SIZE, unsigned int G>
 void Simulation<SIZE, G>::saveMetrics(const std::string &filename) {
-    std::ofstream file;
-    file.open(filename, std::ios_base::app);
-    file << metrics::positiveLinksDensity(_graph) << '\n';
-    file.close();
+    utils::saveToFile<double>(filename, metrics::positiveLinksDensity(_graph));
+//    std::ofstream file(filename, std::ios_base::app);
+//    file << metrics::positiveLinksDensity(_graph) << '\n';
+//    file.close();
 }
 
 template<unsigned int SIZE, unsigned int G>
 std::string Simulation<SIZE, G>::prepareFilename(const std::string &prefix, double p, unsigned int iterations) {
-    std::time_t t = std::time(0);   // get time now
+    std::time_t t = std::time(nullptr);
     auto now = std::localtime(&t);
     std::stringstream ss;
     ss << prefix << "_p=" << p << "_iterations=" << iterations << "_SIZE=" << SIZE << "_G=" << G << "_";
@@ -136,5 +140,10 @@ std::string Simulation<SIZE, G>::prepareFilename(const std::string &prefix, doub
     return ss.str();
 }
 
+template<unsigned int SIZE, unsigned int G>
+void Simulation<SIZE, G>::resetGraph() {
+    _graph = CompleteGraph<SIZE, G>();
+}
 
-#endif //HOMOPHILY_STRUCTURAL_BALANCE_SIMULATION_H
+
+#endif //HOMOPHILY_STRUCTURAL_BALANCE_SIMULATION_HPP

@@ -5,7 +5,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
-#include "Utils.h"
+#include "Utils.hpp"
 
 enum class State {
     Positive = 1,
