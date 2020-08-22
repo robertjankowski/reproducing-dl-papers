@@ -13,16 +13,16 @@ class Simulation {
     CompleteGraph<SIZE, G> _graph{};
 
 public:
-
     std::string prepareFilename(const std::string &prefix, double p, unsigned int iterations);
 
-    void run(double p, unsigned int iterations, const std::string &filename);
+    double run(double p, unsigned int iterations, const std::string &filename,
+               bool calculateParadiseProbability = false);
 
     void resetGraph();
 
     auto getGraph() const { return _graph; }
 
-    void singleStep(double p);
+    int singleStep(double p, bool calculateParadiseProbability = false);
 
 private:
     void updateTriadDeltaThree(const Node<G> &i, const Node<G> &j, const Node<G> &k, Node<G> &toUpdate);
@@ -31,22 +31,35 @@ private:
                              int p_ij, int p_jk, int p_ik, Node<G> &toUpdate, double p);
 
     void saveMetrics(const std::string &filename);
+
+    int checkParadiseState(const Node<G> &i, const Node<G> &j, const Node<G> &k, const Node<G> &toUpdate, int p_ij,
+                           int p_jk, int p_ik);
+
+    int isParadiseState(const Node<G> &x, const Node<G> &y, const Node<G> &toUpdate, int p_xy);
 };
 
 template<unsigned int SIZE, unsigned int G>
-void Simulation<SIZE, G>::run(double p, unsigned int iterations, const std::string &filename) {
+double Simulation<SIZE, G>::run(double p, unsigned int iterations, const std::string &filename,
+                                bool calculateParadiseProbability) {
+    auto paradiseProbability{0.0};
     for (unsigned int i = 0; i < iterations; ++i) {
         if (i % 5000 == 0) {
             saveMetrics(filename);
             std::cout << "Positive links density at step " << i << " = " << metrics::positiveLinksDensity(_graph)
                       << std::endl;
         }
-        singleStep(p);
+        std::cout << "i  = " << i << '\n';
+        paradiseProbability += singleStep(p, calculateParadiseProbability);
+    }
+    if (calculateParadiseProbability) {
+        return paradiseProbability / iterations;
+    } else {
+        return -1;
     }
 }
 
 template<unsigned int SIZE, unsigned int G>
-void Simulation<SIZE, G>::singleStep(double p) {
+int Simulation<SIZE, G>::singleStep(double p, bool calculateParadiseProbability) {
     // 1. find triad in graph
     //  1.1. return (i, j, k) nodes
     // 2. calculate polarity of each pairs
@@ -76,7 +89,11 @@ void Simulation<SIZE, G>::singleStep(double p) {
             updateTriadDeltaOne(i, j, k, p_ij, p_jk, p_ik, toUpdate, p);
         }
         _graph.updateNode(toUpdate);
+        if (calculateParadiseProbability) {
+            return checkParadiseState(i, j, k, toUpdate, p_ij, p_jk, p_ik);
+        }
     }
+    return -1;
 }
 
 template<unsigned int SIZE, unsigned int G>
@@ -143,6 +160,31 @@ std::string Simulation<SIZE, G>::prepareFilename(const std::string &prefix, doub
 template<unsigned int SIZE, unsigned int G>
 void Simulation<SIZE, G>::resetGraph() {
     _graph = CompleteGraph<SIZE, G>();
+}
+
+template<unsigned int SIZE, unsigned int G>
+int Simulation<SIZE, G>::checkParadiseState(const Node<G> &i, const Node<G> &j, const Node<G> &k,
+                                            const Node<G> &toUpdate, int p_ij, int p_jk, int p_ik) {
+    if (toUpdate == i) {
+        return isParadiseState(j, k, toUpdate, p_jk);
+    } else if (toUpdate == j) {
+        return isParadiseState(i, k, toUpdate, p_ik);
+    } else if (toUpdate == k) {
+        return isParadiseState(i, j, toUpdate, p_ij);
+    } else {
+        return 0;
+    }
+}
+
+template<unsigned int SIZE, unsigned int G>
+int Simulation<SIZE, G>::isParadiseState(const Node<G> &x, const Node<G> &y, const Node<G> &toUpdate, int p_xy) {
+    const auto p_ux = static_cast<int>(polarities(toUpdate, x));
+    const auto p_uy = static_cast<int>(polarities(toUpdate, y));
+    if ((p_ux == 1) && (p_uy == 1) && (p_xy == 1)) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 

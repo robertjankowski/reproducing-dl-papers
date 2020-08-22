@@ -1,13 +1,11 @@
 #ifndef HOMOPHILY_STRUCTURAL_BALANCE_COMPLETEGRAPH_HPP
 #define HOMOPHILY_STRUCTURAL_BALANCE_COMPLETEGRAPH_HPP
 
+#include <iostream>
 #include <vector>
 #include <tuple>
 #include "Node.hpp"
 #include "Utils.hpp"
-
-template<unsigned int SIZE>
-using AdjenencyMatrix = std::array<std::array<bool, SIZE>, SIZE>;
 
 template<unsigned int SIZE, unsigned int G>
 class CompleteGraph {

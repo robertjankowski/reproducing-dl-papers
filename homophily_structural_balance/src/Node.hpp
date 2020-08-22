@@ -31,7 +31,7 @@ public:
 
     static Node<G> flipNegativeEdge(const Node<G> &nodeA, const Node<G> &nodeB, unsigned int count = 1);
 
-    bool operator==(const Node<G> &node) { return _id == node.getId(); }
+    bool operator==(const Node<G> &node) const { return _id == node.getId(); }
 
 private:
     [[nodiscard]] State getRandomState(double probability = 0.5) {

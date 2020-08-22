@@ -1,6 +1,7 @@
 #ifndef HOMOPHILY_STRUCTURAL_BALANCE_EXPERIMENTS_HPP
 #define HOMOPHILY_STRUCTURAL_BALANCE_EXPERIMENTS_HPP
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <cmath>
@@ -9,6 +10,9 @@
 #include "Utils.hpp"
 
 namespace experiments {
+    template<unsigned int SIZE, unsigned int G>
+    double singleSimulationPp(Simulation<SIZE, G> &simulation, double p, unsigned int maxIterations);
+
     template<unsigned int SIZE, unsigned int G>
     double singleSimulation(Simulation<SIZE, G> &simulation, double p, unsigned int maxIterations);
 
@@ -21,13 +25,51 @@ namespace experiments {
         const double h = (pStop - pStart) / pSteps;
         utils::saveToFile(filename, "p\trho");
         for (double p = pStart; p < pStop; p += h) {
-            std::cout << "Running simulation for p = " << p << std::endl;
+            std::cout << "Running [rho vs p] simulation for p = " << p << std::endl;
             double averagedRho{0};
             for (auto i = 0; i < nTimes; ++i)
                 averagedRho += singleSimulation(simulation, p, maxIterations);
             averagedRho /= nTimes;
             utils::saveToFile(filename, std::to_string(p) + "\t" + std::to_string(averagedRho));
         }
+    }
+
+    template<unsigned int SIZE, unsigned int G>
+    void phaseDiagramPpVsP(Simulation<SIZE, G> &simulation, double pStart, double pStop, unsigned int pSteps,
+                           unsigned int maxIterations, const std::string &filename, unsigned int nTimes = 5) {
+        const double h = (pStop - pStart) / pSteps;
+        utils::saveToFile(filename, "p\tPp");
+        for (double p = pStart; p < pStop; p += h) {
+            std::cout << "Running [P_p vs p] simulation for p = " << p << std::endl;
+            double averagedProbability{0};
+            for (auto i = 0; i < nTimes; ++i)
+                averagedProbability += singleSimulationPp(simulation, p, maxIterations);
+            averagedProbability /= nTimes;
+            utils::saveToFile(filename, std::to_string(p) + "\t" + std::to_string(averagedProbability));
+        }
+    }
+
+    template<unsigned int SIZE, unsigned int G>
+    double singleSimulationPp(Simulation<SIZE, G> &simulation, double p, unsigned int maxIterations) {
+        simulation.resetGraph();
+        bool isDone = false;
+        double averagedProbability{0};
+        unsigned int n{0};
+        std::vector<double> probs;
+
+        const auto checkPerSteps = maxIterations / 100;
+        while (!isDone && n < maxIterations) {
+            averagedProbability = simulation.singleStep(p, true);
+            if (n % checkPerSteps == 0) {
+                if (isStationaryState(probs)) {
+                    isDone = true;
+                } else {
+                    probs.push_back(averagedProbability);
+                }
+            }
+            n++;
+        }
+        return averagedProbability;
     }
 
     template<unsigned int SIZE, unsigned int G>
@@ -44,10 +86,9 @@ namespace experiments {
         while (!isDone && n < maxIterations) {
             simulation.singleStep(p);
             if (n % checkPerSteps == 0) {
-                std::cout << "n = " << n << '\n';
-                if (isStationaryState(rhos))
+                if (isStationaryState(rhos)) {
                     isDone = true;
-                else {
+                } else {
                     averagedRho = metrics::positiveLinksDensity(simulation.getGraph());
                     rhos.push_back(averagedRho);
                 }

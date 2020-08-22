@@ -22,7 +22,6 @@ namespace metrics {
         return static_cast<double>(positiveLinks) / totalLinks;
     }
 
-}
 
-
+  }
 #endif //HOMOPHILY_STRUCTURAL_BALANCE_METRICS_HPP
