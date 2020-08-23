@@ -25,7 +25,6 @@ template<unsigned int SIZE, unsigned int G>
 std::tuple<Node<G>, Node<G>, Node<G>> CompleteGraph<SIZE, G>::getRandomStateTriad() const {
     // Sample 3 random nodes (they are connected because the graph is complete)
     auto i = utils::getRandom(0, SIZE - 1);
-
     auto j = utils::getRandom(0, SIZE - 1);
     while (i == j)
         j = utils::getRandom(0, SIZE - 1);
@@ -33,7 +32,6 @@ std::tuple<Node<G>, Node<G>, Node<G>> CompleteGraph<SIZE, G>::getRandomStateTria
     auto k = utils::getRandom(0, SIZE - 1);
     while (k == i || k == j)
         k = utils::getRandom(0, SIZE - 1);
-
     return std::make_tuple(_nodes.at(i), _nodes.at(j), _nodes.at(k));
 }
 
@@ -50,17 +48,6 @@ void CompleteGraph<SIZE, G>::updateNode(const Node<G> &newNode) {
         const auto index = std::distance(_nodes.begin(), it);
         _nodes.at(index) = newNode;
     }
-}
-
-template<unsigned int SIZE, unsigned int G>
-std::ostream &operator<<(std::ostream &os, const CompleteGraph<SIZE, G> &graph) {
-    const auto matrix = graph.getAdjenencyMatrix();
-    for (unsigned int i = 0; i < SIZE; ++i) {
-        for (unsigned int j = 0; j < SIZE; ++j)
-            os << matrix[i][j] << " ";
-        os << "\n";
-    }
-    return os;
 }
 
 #endif //HOMOPHILY_STRUCTURAL_BALANCE_COMPLETEGRAPH_HPP

@@ -54,7 +54,7 @@ double Simulation<SIZE, G>::run(double p, unsigned int iterations, const std::st
     if (calculateParadiseProbability) {
         return paradiseProbability / iterations;
     } else {
-        return -1;
+        return 0;
     }
 }
 
@@ -93,7 +93,11 @@ int Simulation<SIZE, G>::singleStep(double p, bool calculateParadiseProbability)
             return checkParadiseState(i, j, k, toUpdate, p_ij, p_jk, p_ik);
         }
     }
-    return -1;
+    if (p_ij + p_jk + p_ik == 3) { // paradise state
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 template<unsigned int SIZE, unsigned int G>
@@ -141,9 +145,6 @@ void Simulation<SIZE, G>::updateTriadDeltaOne(const Node<G> &i, const Node<G> &j
 template<unsigned int SIZE, unsigned int G>
 void Simulation<SIZE, G>::saveMetrics(const std::string &filename) {
     utils::saveToFile<double>(filename, metrics::positiveLinksDensity(_graph));
-//    std::ofstream file(filename, std::ios_base::app);
-//    file << metrics::positiveLinksDensity(_graph) << '\n';
-//    file.close();
 }
 
 template<unsigned int SIZE, unsigned int G>

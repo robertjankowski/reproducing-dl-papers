@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 #include "Simulation.hpp"
 #include "Metrics.hpp"
 #include "Utils.hpp"
@@ -21,7 +22,7 @@ namespace experiments {
     template<unsigned int SIZE, unsigned int G>
     void phaseDiagramRhoVsP(Simulation<SIZE, G> &simulation, double pStart, double pStop,
                             unsigned int pSteps, unsigned int maxIterations,
-                            const std::string &filename, unsigned int nTimes = 5) {
+                            const std::string &filename, unsigned int nTimes = 10) {
         const double h = (pStop - pStart) / pSteps;
         utils::saveToFile(filename, "p\trho");
         for (double p = pStart; p < pStop; p += h) {
@@ -36,7 +37,7 @@ namespace experiments {
 
     template<unsigned int SIZE, unsigned int G>
     void phaseDiagramPpVsP(Simulation<SIZE, G> &simulation, double pStart, double pStop, unsigned int pSteps,
-                           unsigned int maxIterations, const std::string &filename, unsigned int nTimes = 5) {
+                           unsigned int maxIterations, const std::string &filename, unsigned int nTimes = 50) {
         const double h = (pStop - pStart) / pSteps;
         utils::saveToFile(filename, "p\tPp");
         for (double p = pStart; p < pStop; p += h) {
@@ -52,24 +53,15 @@ namespace experiments {
     template<unsigned int SIZE, unsigned int G>
     double singleSimulationPp(Simulation<SIZE, G> &simulation, double p, unsigned int maxIterations) {
         simulation.resetGraph();
-        bool isDone = false;
-        double averagedProbability{0};
         unsigned int n{0};
-        std::vector<double> probs;
+        double avgProb{0};
 
-        const auto checkPerSteps = maxIterations / 100;
-        while (!isDone && n < maxIterations) {
-            averagedProbability = simulation.singleStep(p, true);
-            if (n % checkPerSteps == 0) {
-                if (isStationaryState(probs)) {
-                    isDone = true;
-                } else {
-                    probs.push_back(averagedProbability);
-                }
-            }
+        while (n < maxIterations) {
+            const double averagedProbability = simulation.singleStep(p, true);
+            avgProb += averagedProbability;
             n++;
         }
-        return averagedProbability;
+        return avgProb / maxIterations;
     }
 
     template<unsigned int SIZE, unsigned int G>
