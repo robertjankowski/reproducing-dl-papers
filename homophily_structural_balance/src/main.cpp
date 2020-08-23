@@ -1,23 +1,22 @@
 #include <iostream>
-#include "Node.hpp"
-#include "Graph.hpp"
+#include <chrono>
+#include "Simulation.hpp"
+#include "Experiments.hpp"
 
 int main() {
-    auto n = Node<10>(0);
-    const auto n2 = Node<10>(1);
-    std::cout << n << std::endl;
-    std::cout << n2 << std::endl;
-    std::cout << static_cast<int>(polarities(n, n2)) << std::endl;
-    n.changeAttribute(0, State::Positive);
-    std::cout << n << std::endl;
+    Simulation<3, 101> s;
+    constexpr double p = 0.68;
+    constexpr unsigned int iterations = 2000000;
+    const auto filename = s.prepareFilename("../phase-rhop", p, iterations);
 
+    auto start = std::chrono::steady_clock::now();
 
-    auto g = Graph<10, 5>::completeGraph();
-    std::cout << "Graph: " << std::endl;
-    std::cout << g << std::endl;
+    experiments::phaseDiagramRhoVsP(s, 0, 1.0, 10, iterations, filename);
+//    experiments::phaseDiagramPpVsP(s, 0, 1, 10, iterations, filename);
 
-    g.getRandomStateTriad();
-
-
+    auto end = std::chrono::steady_clock::now();
+    std::cout << "Elapsed time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count()
+              << "ms\n";
+    
     return 0;
 }
